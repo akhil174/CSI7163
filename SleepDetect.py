@@ -10,6 +10,7 @@ from imutils import face_utils
 import threading
 from MessageSystem import sendMessage
 from LogSystem import logger
+# for playing the alarm sound
 import playsound
 
 # defining the alarm file path
@@ -22,7 +23,6 @@ def soundAlarm():
     # sound = vlc.MediaPlayer(alarmFilePath)
     # sound.play()
     playsound.playsound(alarmFilePath)
-    logger("inside soundAlarm(): method")
 
 
 # method for calculating eye aspect ratio
@@ -102,25 +102,32 @@ while True:
             flag = flag + 1
             if flag >= frame_check:
                 count = count + 1
-                alarm = True
-                cv2.putText(frame, "Alert! Driver is sleepy", (150, 150),
-                            cv2.FONT_HERSHEY_PLAIN, 0.5, 0xFF, thickness=1)
-                thread = threading.Thread(target=soundAlarm)
-                # run the thread in the background
-                thread.daemon = True
-                thread.start()
                 if count == 1:
-                    sendMessage()
+                    logger("Driver found sleepy, alert initiated")
                     logger("Sound played to alert the driver")
+                    sendMessage()
+                    alarm = True
+                    # putting the method in the thread
+                    thread = threading.Thread(target=soundAlarm)
+                    # run the thread in the background
+                    thread.daemon = True
+                    thread.start()
         else:
             flag = 0
             alarm = False
+        cv2.putText(frame, "Eye-Aspect-Ratio: {:.2f}".format(EAR), (250, 20),
+                    cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 100, 200), 2)
     cv2.imshow("SleepDetect App", frame)
+    if alarm:
+        displayText = cv2.putText(frame, "Alert! Driver is sleepy", (125, 175), cv2.FONT_HERSHEY_COMPLEX, 1,
+                                  (0, 100, 200), cv2.LINE_4, False)
+        cv2.imshow("SleepDetect App", displayText)
     key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
+    # pressing 'c' on the keyword will close the app
+    if key == ord("c"):
+        logger("Camera stopped by the user")
         break
 cv2.destroyAllWindows()
 camera.release()
-# camera.stop()
-logger("Camera stopped by the user")
+camera.stop()
 soundAlarm().terminate()
