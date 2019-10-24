@@ -10,6 +10,7 @@ from imutils import face_utils
 import threading
 from MessageSystem import sendMessage
 from LogSystem import logger
+from EmailSystem import sendEmail
 # for playing the alarm sound
 import playsound
 
@@ -19,10 +20,19 @@ alarmFilePath = 'C:\\Users\\Admin\\PycharmProjects\\SleepDetect\\analog-alarm.mp
 predictFilePath = 'C:\\Users\\Admin\\PycharmProjects\\SleepDetect\\face_shape_landmarks_predictor.dat'
 
 
+# method for sounding the alarm
 def soundAlarm():
     # sound = vlc.MediaPlayer(alarmFilePath)
     # sound.play()
     playsound.playsound(alarmFilePath)
+
+
+# method for capturing the image
+def captureImage(image):
+    cv2.imwrite(imageName, image)
+    # sending the image to the email here
+    # by default sends email to the mailtrap server
+    sendEmail(imageName, True)
 
 
 # method for calculating eye aspect ratio
@@ -44,6 +54,8 @@ earThreshold = 0.25
 frame_check = 20
 # setting the alarm flag
 alarm = False
+# setting the default name for saving the image
+imageName = "caught.jpg"
 
 # loading the default face detector provided by dlib library
 detector = dlib.get_frontal_face_detector()
@@ -68,13 +80,15 @@ count = 0
 
 while True:
     # reading the frame by frame video from the camera
-    ret, frame = camera.read()
+    success, frame = camera.read()
 
     # setting the frame of the width to 500
-    frame = imutils.resize(frame, width=500)
+    frame = imutils.resize(frame, width=550)
 
     # converting the frame to grayscale
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # converting the frame to LAB color space
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
     # getting the facial points from the detector
     subjects = detector(gray, 0)
@@ -103,6 +117,7 @@ while True:
             if flag >= frame_check:
                 count = count + 1
                 if count == 1:
+                    captureImage(frame)
                     logger("Driver found sleepy, alert initiated")
                     logger("Sound played to alert the driver")
                     sendMessage()

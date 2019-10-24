@@ -21,7 +21,7 @@ def sendMessage():
         logger("Some error occurred while sending the text message -> " + str(e))
         return
     if msgId != "":
-        logger("Text message has been send successfully")
+        logger("Text message has been sent successfully with messageId - " + str(msgId))
     else:
         logger("There was some error in sending the text message(No Exception caused)")
     return
