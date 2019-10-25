@@ -51,7 +51,7 @@ def eyeAspectRatio(eye):
 # threshold value(we considered) for the distance between the eyes to consider him drowsy/sleepy
 earThreshold = 0.25
 # number of frames for which we will check the earThreshold
-frame_check = 20
+frame_check = 16
 # setting the alarm flag
 alarm = False
 # setting the default name for saving the image
@@ -86,9 +86,9 @@ while True:
     frame = imutils.resize(frame, width=550)
 
     # converting the frame to grayscale
-    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # converting the frame to LAB color space
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
     # getting the facial points from the detector
     subjects = detector(gray, 0)
@@ -108,8 +108,8 @@ while True:
         # used opencv for for detecting the eye boundaries
         leftEyeHull = cv2.convexHull(leftEye)
         rightEyeHull = cv2.convexHull(rightEye)
-        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
+        cv2.drawContours(frame, [leftEyeHull], -1, (0, 1, 0, 0.1), 1)
+        cv2.drawContours(frame, [rightEyeHull], -1, (0, 1, 0, 0.1), 1)
 
         # if the eye aspect ratio is less than the threshold then the person is feeling sleepy
         if EAR < earThreshold:

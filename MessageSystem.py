@@ -11,7 +11,9 @@ phoneNumber = "1"
 msgId = ""
 
 def sendMessage():
+    # manpreetsingh3
     user_name = "manpreetsingh4"
+    # rRFylATjz3sQvhTDB5w5CTe4kQ2I81
     auth_token = "xu0eI43BVNlYWzBzHwsfP6Aa7gAphr"
     try:
         client = TextmagicRestClient(user_name, auth_token)

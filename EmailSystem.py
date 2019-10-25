@@ -10,7 +10,7 @@ import base64
 from LogSystem import logger
 
 
-# method for sending the email to both the local server and mailtrap server(link above)
+# method for sending the email to both the local server or mailtrap server(link above) depending on the flag
 def sendEmail(filename, flag):
     if flag:
         # defining all the variables to contain required info
@@ -27,7 +27,7 @@ def sendEmail(filename, flag):
         email["From"] = senderEmail
         email["To"] = receiverEmail
 
-        # encoding the image and adding it to the HTML body of the email
+        # encoding the image using base64 and adding it to the HTML body of the email
         encImage = base64.b64encode(open(filename, "rb").read()).decode()
 
         # HTML body of the image
@@ -54,26 +54,31 @@ def sendEmail(filename, flag):
             return
     else:
         # this part uses the local SMTP server to send the email
-        portNumber = "77"
+        portNumber = "25"
         serverName = "smtp.sleepdetect.com"
         username = "admin"
         password = "admin"
-        senderEmail = "admin@sleepdetect.com"
-        receiverEmail = "system@sleepdetect.com"
+        senderEmail = "system@sleepdetect.com"
+        receiverEmail = "admin@sleepdetect.com"
 
+        # creating an email object and adding details to it
         email = MIMEMultipart()
         email["Subject"] = "Sleepy Driver Alert!"
         email["From"] = senderEmail
         email["To"] = receiverEmail
 
         emailBody = MIMEText("Alert! The driver is feeling sleepy/drowsy. Please contact the driver ASAP to avoid any mishap. Thank you.")
+        # attaching the email body to the email itself
         email.attach(emailBody)
 
+        # adding the image and attaching it to the email object
         encImage = open(filename, "rb")
         emailImage = MIMEImage(encImage.read())
         email.attach(emailImage)
         encImage.close()
 
+        # sending the email using smtplib and logging details
         server = smtplib.SMTP(serverName, portNumber)
         server.send_message(email, senderEmail, receiverEmail)
+        logger("Email with image has been sent successfully.")
         return
