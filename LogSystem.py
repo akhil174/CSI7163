@@ -12,6 +12,7 @@ open(filename, "a").close()
 
 
 def logger(msg):
+    # other approach for the log system
     # now = datetime.now()
     # currentTime = now.strftime("%H:%M:%S")
     # f = open(filename, "w+")
